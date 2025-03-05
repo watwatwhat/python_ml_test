@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify, render_template
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 import numpy as np
 import pandas as pd
 import joblib
@@ -8,14 +8,16 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.datasets import load_breast_cancer
 
 app = Flask(__name__)
-CORS(app, supports_credentials=True, resources={
-    r"/*": {
-        "origins": ["http://localhost:5000", "http://127.0.0.1:5000"],
-        "methods": ["GET", "POST"],
-        "allow_headers": ["Content-Type"],
-        "supports_credentials": True
-    }
-})
+# CORS(app, supports_credentials=True, resources={
+#     r"/*": {
+#         # "origins": ["*"],
+#         "origins": ["http://localhost:5000", "http://127.0.0.1:5000"],
+#         "methods": ["GET", "POST"],
+#         "allow_headers": ["Content-Type"],
+#         "supports_credentials": True
+#     }
+# })
+CORS(app)
 
 @app.route('/')
 def index():
@@ -36,7 +38,8 @@ model.fit(X_train, y_train)
 # モデルを保存
 joblib.dump(model, 'model.pkl')
 
-@app.route('/predict', methods=['POST'])
+@app.route('/predict', methods=['POST', 'OPTIONS'])
+@cross_origin()
 def predict():
     try:
         # JSONデータを受け取る
