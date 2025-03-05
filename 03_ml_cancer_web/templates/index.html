@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>乳がん診断予測</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .feature-group {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .feature-input {
+            margin-bottom: 10px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+            color: #666;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 4px;
+        }
+        .success {
+            background-color: #dff0d8;
+            color: #3c763d;
+            border: 1px solid #d6e9c6;
+        }
+        .error {
+            background-color: #f2dede;
+            color: #a94442;
+            border: 1px solid #ebccd1;
+        }
+        .sample-button {
+            background-color: #2196F3;
+            margin-right: 10px;
+        }
+        .sample-button:hover {
+            background-color: #1976D2;
+        }
+        .button-group {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>乳がん診断予測システム</h1>
+    <p>30個の特徴量を入力して診断予測を行います。</p>
+    
+    <div class="button-group">
+        <button onclick="fillSampleData()" class="sample-button">サンプルデータを入力</button>
+        <button onclick="clearForm()">フォームをクリア</button>
+    </div>
+
+    <form id="predictionForm">
+        <div class="feature-group">
+            <div class="feature-input">
+                <label for="mean_radius">平均半径</label>
+                <input type="number" step="0.000001" id="mean_radius" required>
+            </div>
+            <div class="feature-input">
+                <label for="mean_texture">平均テクスチャ</label>
+                <input type="number" step="0.000001" id="mean_texture" required>
+            </div>
+            <div class="feature-input">
+                <label for="mean_perimeter">平均周囲長</label>
+                <input type="number" step="0.000001" id="mean_perimeter" required>
+            </div>
+            <div class="feature-input">
+                <label for="mean_area">平均面積</label>
+                <input type="number" step="0.000001" id="mean_area" required>
+            </div>
+            <div class="feature-input">
+                <label for="mean_smoothness">平均滑らかさ</label>
+                <input type="number" step="0.000001" id="mean_smoothness" required>
+            </div>
+            <div class="feature-input">
+                <label for="mean_compactness">平均密度</label>
+                <input type="number" step="0.000001" id="mean_compactness" required>
+            </div>
+            <div class="feature-input">
+                <label for="mean_concavity">平均凹度</label>
+                <input type="number" step="0.000001" id="mean_concavity" required>
+            </div>
+            <div class="feature-input">
+                <label for="mean_concave_points">平均凹点数</label>
+                <input type="number" step="0.000001" id="mean_concave_points" required>
+            </div>
+            <div class="feature-input">
+                <label for="mean_symmetry">平均対称性</label>
+                <input type="number" step="0.000001" id="mean_symmetry" required>
+            </div>
+            <div class="feature-input">
+                <label for="mean_fractal_dimension">平均フラクタル次元</label>
+                <input type="number" step="0.000001" id="mean_fractal_dimension" required>
+            </div>
+            <div class="feature-input">
+                <label for="radius_error">半径誤差</label>
+                <input type="number" step="0.000001" id="radius_error" required>
+            </div>
+            <div class="feature-input">
+                <label for="texture_error">テクスチャ誤差</label>
+                <input type="number" step="0.000001" id="texture_error" required>
+            </div>
+            <div class="feature-input">
+                <label for="perimeter_error">周囲長誤差</label>
+                <input type="number" step="0.000001" id="perimeter_error" required>
+            </div>
+            <div class="feature-input">
+                <label for="area_error">面積誤差</label>
+                <input type="number" step="0.000001" id="area_error" required>
+            </div>
+            <div class="feature-input">
+                <label for="smoothness_error">滑らかさ誤差</label>
+                <input type="number" step="0.000001" id="smoothness_error" required>
+            </div>
+            <div class="feature-input">
+                <label for="compactness_error">密度誤差</label>
+                <input type="number" step="0.000001" id="compactness_error" required>
+            </div>
+            <div class="feature-input">
+                <label for="concavity_error">凹度誤差</label>
+                <input type="number" step="0.000001" id="concavity_error" required>
+            </div>
+            <div class="feature-input">
+                <label for="concave_points_error">凹点数誤差</label>
+                <input type="number" step="0.000001" id="concave_points_error" required>
+            </div>
+            <div class="feature-input">
+                <label for="symmetry_error">対称性誤差</label>
+                <input type="number" step="0.000001" id="symmetry_error" required>
+            </div>
+            <div class="feature-input">
+                <label for="fractal_dimension_error">フラクタル次元誤差</label>
+                <input type="number" step="0.000001" id="fractal_dimension_error" required>
+            </div>
+            <div class="feature-input">
+                <label for="worst_radius">最悪半径</label>
+                <input type="number" step="0.000001" id="worst_radius" required>
+            </div>
+            <div class="feature-input">
+                <label for="worst_texture">最悪テクスチャ</label>
+                <input type="number" step="0.000001" id="worst_texture" required>
+            </div>
+            <div class="feature-input">
+                <label for="worst_perimeter">最悪周囲長</label>
+                <input type="number" step="0.000001" id="worst_perimeter" required>
+            </div>
+            <div class="feature-input">
+                <label for="worst_area">最悪面積</label>
+                <input type="number" step="0.000001" id="worst_area" required>
+            </div>
+            <div class="feature-input">
+                <label for="worst_smoothness">最悪滑らかさ</label>
+                <input type="number" step="0.000001" id="worst_smoothness" required>
+            </div>
+            <div class="feature-input">
+                <label for="worst_compactness">最悪密度</label>
+                <input type="number" step="0.000001" id="worst_compactness" required>
+            </div>
+            <div class="feature-input">
+                <label for="worst_concavity">最悪凹度</label>
+                <input type="number" step="0.000001" id="worst_concavity" required>
+            </div>
+            <div class="feature-input">
+                <label for="worst_concave_points">最悪凹点数</label>
+                <input type="number" step="0.000001" id="worst_concave_points" required>
+            </div>
+            <div class="feature-input">
+                <label for="worst_symmetry">最悪対称性</label>
+                <input type="number" step="0.000001" id="worst_symmetry" required>
+            </div>
+            <div class="feature-input">
+                <label for="worst_fractal_dimension">最悪フラクタル次元</label>
+                <input type="number" step="0.000001" id="worst_fractal_dimension" required>
+            </div>
+        </div>
+        <button type="submit">予測する</button>
+    </form>
+
+    <div id="result"></div>
+
+    <script>
+        // サンプルデータ（良性のケース）
+        const sampleData = [
+            17.99, 10.38, 122.8, 1001.0, 0.1184, 0.2776, 0.3001, 0.1471, 0.2419, 0.07871,
+            1.095, 0.9053, 8.589, 153.4, 0.006399, 0.04904, 0.05373, 0.01587, 0.03003, 0.006193,
+            25.38, 17.33, 184.6, 2019.0, 0.1622, 0.6656, 0.7119, 0.2654, 0.4601, 0.1189
+        ];
+
+        // フォームの要素を全て取得
+        const inputs = document.querySelectorAll('input[type="number"]');
+
+        // サンプルデータを入力するための関数
+        function fillSampleData() {
+            inputs.forEach((input, index) => {
+                input.value = sampleData[index];
+            });
+        }
+
+        // フォームをクリアする関数
+        function clearForm() {
+            inputs.forEach(input => {
+                input.value = '';
+            });
+            document.getElementById('result').innerHTML = '';
+            document.getElementById('result').className = '';
+        }
+
+        // フォーム送信時の処理
+        document.getElementById('predictionForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // 入力値を配列に格納
+            const features = Array.from(inputs).map(input => parseFloat(input.value));
+            
+            try {
+                const response = await fetch('http://127.0.0.1:5000/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({ features: features })
+                });
+                
+                const data = await response.json();
+                const resultDiv = document.getElementById('result');
+                
+                if (data.prediction !== undefined) {
+                    const diagnosis = data.prediction === 1 ? '良性' : '悪性';
+                    resultDiv.innerHTML = `<h3>診断結果</h3><p>予測結果: ${diagnosis}</p>`;
+                    resultDiv.className = 'success';
+                } else {
+                    resultDiv.innerHTML = `<h3>エラー</h3><p>${data.error || '予測中にエラーが発生しました。'}</p>`;
+                    resultDiv.className = 'error';
+                }
+            } catch (error) {
+                const resultDiv = document.getElementById('result');
+                resultDiv.innerHTML = `<h3>エラー</h3><p>サーバーとの通信中にエラーが発生しました。</p>`;
+                resultDiv.className = 'error';
+                console.log(error)
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,4 +1,5 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
+from flask_cors import CORS
 import numpy as np
 import pandas as pd
 import joblib
@@ -7,6 +8,18 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.datasets import load_breast_cancer
 
 app = Flask(__name__)
+CORS(app, supports_credentials=True, resources={
+    r"/*": {
+        "origins": ["http://localhost:5000", "http://127.0.0.1:5000"],
+        "methods": ["GET", "POST"],
+        "allow_headers": ["Content-Type"],
+        "supports_credentials": True
+    }
+})
+
+@app.route('/')
+def index():
+    return render_template('index.html')
 
 # データセットのロード
 data = load_breast_cancer()
@@ -39,4 +52,4 @@ def predict():
         return jsonify({'error': str(e)})
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=5000)
